@@ -34,18 +34,21 @@ body {
   align-items: center;
   gap: 12px;
 }
-.logo {
+.logo-img {
   width: 42px;
   height: 42px;
   border-radius: 50%;
   background: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--primary);
-  font-weight: 900;
-  font-size: 20px;
-  box-shadow: 0 0 12px rgba(255,255,255,0.6);
+  padding: 4px;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.6);
+}
+
+.nav-links a.active {
+  color: var(--accent);
+  border-bottom: 2px solid var(--accent);
+}
+body[dir="ltr"] .nav-links a {
+  margin: 0 8px;
 }
 .nav-links a {
   color: #fff;
