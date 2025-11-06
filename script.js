@@ -125,7 +125,7 @@ ${fbTxt || "- لا يوجد"}`;
 // ===== إرسال البيانات إلى Google Sheets =====
 
 // 🧩 حطي هنا رابط الـ Web App اللي نسختيه من Google Apps Script
-const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbzRSXYMYjrDSeRLOKR9ZCJ-JxMUVueFhbCrOeoWHn2BRuCQ9lEyn_IrLkcso6uaqPP8/exec"; // ← استبدليه برابطك الفعلي
+const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbyNQY3FzWFV9j31IP2sT4pni6zD9bWwI1Fi3H8QszUT10iK-zu4jSYWhw3ynnxIRJ_8/exec"; // ← استبدليه برابطك الفعلي
 
 const statusEl = document.getElementById("status");
 const sendBtn = document.getElementById("send-btn");
