@@ -1,177 +1,117 @@
 :root {
-  --bg: #1E3A5F;         /* الخلفية الكحلية الغامقة */
-  --card: #ffffff;        /* بطاقات بيضاء للنصوص */
-  --text: #1E3A5F;        /* النصوص بنفس لون الخلفية الغامق */
-  --muted: #6b7280;       /* رمادي للنصوص الثانوية */
-  --primary: #8B1E3F;     /* خمري - اللون الرئيسي للأزرار */
-  --accent: #FFD166;      /* أصفر فاتح للزر الإضافي */
+  --bg: #1E3A5F;
+  --card: #ffffff;
+  --text: #1E3A5F;
+  --muted: #6b7280;
+  --primary: #8B1E3F;
+  --accent: #FFD166;
   --border: #e5e7eb;
-  --danger: #8B1E3F;      /* نفس الخمري */
-  --shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  --shadow: 0 6px 16px rgba(0,0,0,0.08);
   --radius: 16px;
 }
 
-* {
-  box-sizing: border-box;
-}
-
+* { box-sizing: border-box; }
 body {
   font-family: "Tajawal", sans-serif;
   background: var(--bg);
   color: var(--text);
   margin: 0;
-  padding: 20px;
+  padding: 0;
+}
+
+/* ===== الشريط العلوي ===== */
+.navbar {
+  background: var(--primary);
+  color: #fff;
   display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.logo {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #fff;
+  display: flex;
+  align-items: center;
   justify-content: center;
+  color: var(--primary);
+  font-weight: 900;
+  font-size: 20px;
+  box-shadow: 0 0 12px rgba(255,255,255,0.6);
+}
+.nav-links a {
+  color: #fff;
+  text-decoration: none;
+  margin: 0 10px;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--accent); }
+.lang-toggle {
+  background: var(--accent);
+  border: none;
+  border-radius: 8px;
+  padding: 6px 12px;
+  color: var(--text);
+  font-weight: 600;
+  cursor: pointer;
 }
 
+/* ===== المحتوى ===== */
 .container {
-  width: 100%;
   max-width: 900px;
+  margin: 20px auto;
+  padding: 16px;
+}
+h1 {
+  text-align: center;
+  color: #fff;
+  margin: 8px 0;
+  font-size: 24px;
+}
+.date {
+  text-align: center;
+  color: #ddd;
+  margin-bottom: 20px;
 }
 
-/* ===== البطاقات ===== */
 .card {
   background: var(--card);
   border-radius: var(--radius);
   padding: 18px;
   margin-bottom: 20px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-.card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
-}
-
-/* ===== العناوين ===== */
-h1 {
-  text-align: center;
-  margin: 0 0 6px;
-  font-weight: 800;
-  font-size: 24px;
-  color: #fff;
-}
-.date {
-  text-align: center;
-  color: #e5e7eb;
-  margin-bottom: 20px;
-  font-size: 15px;
+  box-shadow: var(--shadow);
 }
 h2 {
-  font-size: 17px;
-  border-right: 5px solid var(--accent);
-  padding-right: 10px;
-  margin-bottom: 16px;
-  color: var(--text);
+  font-size: 18px;
+  border-right: 4px solid var(--accent);
+  padding-right: 8px;
+  margin-bottom: 12px;
 }
 
-.grid.g2 {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-@media (max-width: 640px) {
-  .grid.g2 {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* ===== حقول الإدخال ===== */
 .field {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
-.field input {
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 12px;
-  font-size: 15px;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-.field input:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 2px rgba(139, 30, 63, 0.15);
-}
-.field input:required:invalid {
-  border-color: var(--danger);
-}
-
-/* ===== تصميم الصفوف العمودية ===== */
-.tbody {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.tbody-row {
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  background: #fff;
-  box-shadow: 0 6px 12px rgba(30, 58, 95, 0.08);
-  padding: 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  transition: box-shadow 0.2s ease;
-}
-.tbody-row:hover {
-  box-shadow: 0 10px 20px rgba(30, 58, 95, 0.15);
-}
-
-.cell {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.cell label {
-  font-size: 14px;
-  color: var(--muted);
-}
-
-.cell input,
-.cell textarea {
-  width: 100%;
-  padding: 12px;
+.field label { font-size: 14px; color: var(--muted); }
+.field input, .field textarea, .field select {
+  padding: 10px;
   border: 1px solid var(--border);
   border-radius: 10px;
+  font-size: 15px;
   resize: none;
-  font-size: 15px;
-  line-height: 1.5;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-.cell textarea {
-  min-height: 50px;
-  overflow: hidden;
-}
-.cell input:focus,
-.cell textarea:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 2px rgba(139, 30, 63, 0.15);
 }
 
-/* ===== زر الحذف ===== */
-.cell button.del {
-  align-self: flex-end;
-  background: var(--primary);
-  border: none;
-  border-radius: 10px;
-  color: #fff;
-  padding: 10px 16px;
-  font-weight: bold;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background 0.2s ease, transform 0.1s ease;
-}
-.cell button.del:hover {
-  background: #a7284f;
-  transform: scale(0.98);
-}
-
-/* ===== زر الإضافة (الزائد) ===== */
 .fab {
   display: block;
   margin: 16px auto;
@@ -182,42 +122,29 @@ h2 {
   color: #1E3A5F;
   border: none;
   font-size: 28px;
-  box-shadow: 0 6px 18px rgba(255, 209, 102, 0.5);
+  box-shadow: 0 6px 18px rgba(255,209,102,0.5);
   cursor: pointer;
-  transition: transform 0.15s ease, filter 0.15s ease;
 }
-.fab:hover {
-  filter: brightness(1.05);
-  transform: scale(1.08);
+.del {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-weight: bold;
 }
-
-/* ===== زر الإرسال ===== */
 .send {
   width: 100%;
   background: var(--primary);
+  color: #fff;
   border: none;
   padding: 16px;
-  color: #fff;
   border-radius: 14px;
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 6px 16px rgba(139, 30, 63, 0.35);
-  transition: background 0.2s ease, transform 0.15s ease;
 }
-.send:hover {
-  background: #a7284f;
-  transform: translateY(-1px);
-}
-
-.status {
-  text-align: center;
-  margin-top: 10px;
-  font-size: 15px;
-}
-.success {
-  color: #10b981;
-}
-.error {
-  color: #ef4444;
-}
+.status { text-align: center; margin-top: 8px; }
+.success { color: green; }
+.error { color: red; }
