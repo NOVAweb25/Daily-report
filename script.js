@@ -50,25 +50,50 @@ function addRow(section){
   document.getElementById(`${section}-body`).appendChild(createRow(section));
 }
 
-function initPage(section,url){
+function initPage(section, url) {
   addRow(section);
-  const sendBtn=document.querySelector(`#send-${section}`);
-  const statusEl=document.getElementById("status");
-  sendBtn.addEventListener("click",async()=>{
-    const inputs=document.querySelectorAll(`#${section}-body input, #${section}-body textarea, #${section}-body select`);
-    const data={};
-    inputs.forEach(i=>{data[i.previousSibling.textContent]=i.value||"";});
-    sendBtn.disabled=true;statusEl.textContent="📤 جاري الإرسال...";
-    try{
-      const res = await fetch(url, {
+  const sendBtn = document.querySelector(`#send-${section}`);
+  const statusEl = document.getElementById("status");
+
+  sendBtn.addEventListener("click", async () => {
+    // 🧩 جمع بيانات الموظف
+    const empName = document.getElementById("empName").value.trim();
+    const empPhone = document.getElementById("empPhone").value.trim();
+
+    // 🧩 جمع بيانات القسم
+    const inputs = document.querySelectorAll(
+      `#${section}-body input, #${section}-body textarea, #${section}-body select`
+    );
+
+    const data = {
+      "اسم الموظف": empName,
+      "الجوال": empPhone,
+    };
+
+    inputs.forEach((i) => {
+      data[i.previousSibling.textContent] = i.value || "";
+    });
+
+    sendBtn.disabled = true;
+    statusEl.textContent = "📤 جاري الإرسال...";
+
+    try {
+      await fetch(url, {
         method: "POST",
-        mode: "no-cors", // ✅ هذا هو المفتاح
+        mode: "no-cors", // ضروري جدًا
         body: JSON.stringify(data),
         headers: { "Content-Type": "application/json" },
       });
-      statusEl.textContent=res.ok?"✅ تم الإرسال بنجاح.":"❌ حدث خطأ أثناء الإرسال.";
-      statusEl.className=res.ok?"status success":"status error";
-    }catch(e){statusEl.textContent="❌ تعذر الاتصال بـ Google Sheets.";statusEl.className="status error";}
-    sendBtn.disabled=false;
+
+      statusEl.textContent = "✅ تم الإرسال بنجاح.";
+      statusEl.className = "status success";
+      alert("تم إرسال التقرير بنجاح ✅");
+    } catch (e) {
+      console.error(e);
+      statusEl.textContent = "❌ تعذر الاتصال بـ Google Sheets.";
+      statusEl.className = "status error";
+    }
+
+    sendBtn.disabled = false;
   });
 }
