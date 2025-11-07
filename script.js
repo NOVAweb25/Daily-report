@@ -1,79 +1,69 @@
-const API_BASE = "https://github.com/NOVAweb25/daily-back"; // ← عدليه برابطك في Render
+function toggleLang(){alert("ميزة تغيير اللغة قيد التطوير 🌐");}
 
-// ✅ تسجيل جديد
-const regForm = document.getElementById("registerForm");
-if (regForm) {
-  regForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const data = {
-      first_name: regForm.first_name.value,
-      last_name: regForm.last_name.value,
-      phone: regForm.phone.value,
-      password: regForm.password.value,
-    };
-    const res = await fetch(`${API_BASE}/auth/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
-    const result = await res.json();
-    regForm.querySelector("#status").textContent = `✅ تم التسجيل، اسم المستخدم الخاص بك: ${result.username}`;
-  });
-}
+// التاريخ
+const dateEl=document.getElementById("date");
+if(dateEl){dateEl.textContent=`تاريخ اليوم: ${new Date().toLocaleDateString("ar-SA",{weekday:"long",year:"numeric",month:"long",day:"numeric"})}`;}
 
-// ✅ تسجيل الدخول
-const loginForm = document.getElementById("loginForm");
-if (loginForm) {
-  loginForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const data = {
-      username: loginForm.username.value,
-      password: loginForm.password.value,
-    };
-    const res = await fetch(`${API_BASE}/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
-    const result = await res.json();
-    if (res.ok) {
-      localStorage.setItem("employee_id", result.employee_id);
-      window.location.href = "tasks.html";
-    } else {
-      loginForm.querySelector("#status").textContent = "❌ بيانات غير صحيحة";
-    }
-  });
-}
+function autoResize(el){el.style.height="auto";el.style.height=el.scrollHeight+"px";}
 
-// ✅ إرسال التقارير
-async function sendReport(section, data, total = 0) {
-  const employee_id = localStorage.getItem("employee_id");
-  const payload = {
-    employee_id,
-    section,
-    data,
-    total_cost: total,
+function createRow(section){
+  const row=document.createElement("div");
+  row.className="card";
+  const fields={
+    tasks:[
+      {label:"الوقت",type:"time"},
+      {label:"المشروع / الموقع",type:"textarea"},
+      {label:"المهمة المنجزة",type:"textarea"},
+      {label:"كم أنجزت",type:"textarea"},
+    ],
+    expenses:[
+      {label:"المبلغ المدفوع",type:"textarea"},
+      {label:"الموقع",type:"select",options:["البدراني","القبلتين حضرم","القبلتين وقف البري","الوكالة الذهبية","قربان","مصروفات عامة","الفندق السحمان","ينبع"]},
+      {label:"تفاصيل المدفوعات",type:"textarea"},
+      {label:"لمن تم التسديد",type:"textarea"},
+      {label:"إرفاق ملف",type:"file",accept:".pdf,.png,.jpg,.jpeg"},
+    ],
+    feedback:[
+      {label:"الصعوبات",type:"textarea"},
+      {label:"الاحتياجات",type:"textarea"},
+      {label:"الاقتراحات",type:"textarea"},
+    ],
   };
-  const res = await fetch(`${API_BASE}/reports/add`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
+  fields[section].forEach(f=>{
+    const field=document.createElement("div");
+    field.className="field";
+    const label=document.createElement("label");
+    label.textContent=f.label;
+    let input;
+    if(f.type==="textarea"){input=document.createElement("textarea");input.oninput=()=>autoResize(input);}
+    else if(f.type==="select"){input=document.createElement("select");f.options.forEach(o=>{const op=document.createElement("option");op.value=o;op.textContent=o;input.appendChild(op);});}
+    else{input=document.createElement("input");input.type=f.type;if(f.accept)input.accept=f.accept;}
+    field.append(label,input);row.append(field);
   });
-  return await res.json();
+  const del=document.createElement("button");
+  del.className="del";del.textContent="حذف";del.onclick=()=>row.remove();
+  row.append(del);
+  return row;
 }
 
-// ✅ واجهة عرض التقارير للمسؤول
-async function loadAdminData() {
-  const container = document.getElementById("adminContainer");
-  if (!container) return;
-  const res = await fetch(`${API_BASE}/reports/weekly-summary`);
-  const data = await res.json();
+function addRow(section){
+  document.getElementById(`${section}-body`).appendChild(createRow(section));
+}
 
-  let html = "<h2>ملخص التقارير الأسبوعي</h2><table><tr><th>الموظف</th><th>عدد المهام</th><th>عدد المصروفات</th><th>المجموع</th></tr>";
-  for (const emp in data) {
-    const r = data[emp];
-    html += `<tr><td>${emp}</td><td>${r.tasks}</td><td>${r.expenses}</td><td>${r.total_cost} ريال</td></tr>`;
-  }
-  html += "</table>";
-  container.innerHTML = html;
+function initPage(section,url){
+  addRow(section);
+  const sendBtn=document.querySelector(`#send-${section}`);
+  const statusEl=document.getElementById("status");
+  sendBtn.addEventListener("click",async()=>{
+    const inputs=document.querySelectorAll(`#${section}-body input, #${section}-body textarea, #${section}-body select`);
+    const data={};
+    inputs.forEach(i=>{data[i.previousSibling.textContent]=i.value||"";});
+    sendBtn.disabled=true;statusEl.textContent="📤 جاري الإرسال...";
+    try{
+      const res=await fetch(url,{method:"POST",body:JSON.stringify(data),headers:{"Content-Type":"application/json"}});
+      statusEl.textContent=res.ok?"✅ تم الإرسال بنجاح.":"❌ حدث خطأ أثناء الإرسال.";
+      statusEl.className=res.ok?"status success":"status error";
+    }catch(e){statusEl.textContent="❌ تعذر الاتصال بـ Google Sheets.";statusEl.className="status error";}
+    sendBtn.disabled=false;
+  });
 }

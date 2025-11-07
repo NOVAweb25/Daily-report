@@ -6,20 +6,18 @@
   <title>تقرير الإنجاز - المصروفات</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <body>
-   <nav class="navbar">
+  <nav class="navbar">
     <div class="nav-left">
-      <img src="assets/logo.svg" alt="Logo" class="logo-img" />
+      <div class="logo">ن</div>
       <div class="nav-links">
         <a href="index.html">المهام</a>
-        <a href="expenses.html" class="active">المصروفات</a>
+        <a href="expenses.html">المصروفات</a>
         <a href="feedback.html">الصعوبات</a>
       </div>
     </div>
-    <button id="lang-btn" class="lang-toggle">EN</button>
+    <button class="lang-toggle" onclick="toggleLang()">EN</button>
   </nav>
-
 
   <div class="container">
     <h1>القسم الثاني: المصروفات</h1>
@@ -31,8 +29,7 @@
     <p id="status" class="status"></p>
   </div>
 
- <script src="script.js"></script>
-<script>initPage("expenses");</script>
-
+  <script src="script.js"></script>
+  <script>const SHEET_URL="https://script.google.com/macros/s/REPLACE_EXPENSES_URL/exec";initPage("expenses",SHEET_URL);</script>
 </body>
 </html>
