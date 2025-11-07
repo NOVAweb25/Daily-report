@@ -1,11 +1,4 @@
-// ✅ تحميل مكتبة Excel
-// تأكدي إنها مضافة في <head>:
-/// <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-
-function toggleLang() {
-  alert("ميزة تغيير اللغة قيد التطوير 🌐");
-}
-
+// ✅ عرض تاريخ اليوم تلقائي
 const dateEl = document.getElementById("date");
 if (dateEl) {
   const today = new Date().toLocaleDateString("ar-SA", {
@@ -17,7 +10,7 @@ if (dateEl) {
   dateEl.textContent = `تاريخ اليوم: ${today}`;
 }
 
-// 🔹 أدوات المظهر
+// ✅ إنشاء صف جديد حسب نوع الصفحة
 function autoResize(el) {
   el.style.height = "auto";
   el.style.height = el.scrollHeight + "px";
@@ -26,6 +19,7 @@ function autoResize(el) {
 function createRow(section) {
   const row = document.createElement("div");
   row.className = "card";
+
   const fields = {
     tasks: [
       { label: "الوقت", type: "time" },
@@ -89,6 +83,7 @@ function createRow(section) {
   del.textContent = "حذف";
   del.onclick = () => row.remove();
   row.append(del);
+
   return row;
 }
 
@@ -96,50 +91,69 @@ function addRow(section) {
   document.getElementById(`${section}-body`).appendChild(createRow(section));
 }
 
-// 🔹 إنشاء التقرير الكامل في Excel
-function exportFullReport(empName, empPhone, sectionsData) {
-  const wb = XLSX.utils.book_new();
+// ✅ حفظ كل بيانات اليوم في نفس ملف بتاريخ اليوم
+function saveToExcel(section, data) {
+  const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+  const fileName = `تقرير_${today}.xlsx`;
+  let wb;
 
-  const today = new Date().toISOString().split("T")[0]; // yyyy-mm-dd
-  const ws_data = [];
+  // لو الملف موجود في localStorage نحمله من الذاكرة
+  const saved = localStorage.getItem(fileName);
+  if (saved) {
+    const bytes = Uint8Array.from(atob(saved), (c) => c.charCodeAt(0));
+    wb = XLSX.read(bytes, { type: "array" });
+  } else {
+    wb = XLSX.utils.book_new();
+  }
 
-  ws_data.push([`الموظف: ${empName}`]);
-  ws_data.push([`تاريخ اليوم: ${today}`]);
-  ws_data.push([""]);
+  // لو ورقة اليوم موجودة، نحملها ونكمل فيها
+  let ws = wb.Sheets["اليوم"];
+  let ws_data = [];
 
-  // إضافة كل جدول بحسب القسم
-  if (sectionsData.tasks) {
-    ws_data.push(["📋 جدول المهام"]);
-    ws_data.push(Object.keys(sectionsData.tasks));
-    ws_data.push(Object.values(sectionsData.tasks));
+  if (ws) {
+    ws_data = XLSX.utils.sheet_to_json(ws, { header: 1 });
+    ws_data.push([""]); // فراغ بين الأقسام
+  } else {
+    // أول مرة
+    const todayText = new Date().toLocaleDateString("ar-SA", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+    ws_data.push([`📅 تاريخ اليوم: ${todayText}`]);
     ws_data.push([""]);
   }
 
-  if (sectionsData.expenses) {
-    ws_data.push(["💰 جدول المصروفات"]);
-    ws_data.push(Object.keys(sectionsData.expenses));
-    ws_data.push(Object.values(sectionsData.expenses));
-    ws_data.push([""]);
-  }
+  // يضيف عنوان القسم حسب الصفحة
+  const sectionTitles = {
+    tasks: "📋 جدول المهام",
+    expenses: "💰 جدول المصروفات",
+    feedback: "💭 جدول الصعوبات والاقتراحات",
+  };
 
-  if (sectionsData.feedback) {
-    ws_data.push(["💭 جدول الصعوبات والاقتراحات"]);
-    ws_data.push(Object.keys(sectionsData.feedback));
-    ws_data.push(Object.values(sectionsData.feedback));
-  }
+  ws_data.push([sectionTitles[section]]);
+  ws_data.push(Object.keys(data));
+  ws_data.push(Object.values(data));
 
-  const ws = XLSX.utils.aoa_to_sheet(ws_data);
-  XLSX.utils.book_append_sheet(wb, ws, today);
+  // تحويل البيانات لورقة وتحديثها
+  ws = XLSX.utils.aoa_to_sheet(ws_data);
+  wb.Sheets["اليوم"] = ws;
+  wb.SheetNames = ["اليوم"];
 
-  XLSX.writeFile(wb, `تقرير_${empName || "موظف"}.xlsx`);
+  // حفظ الملف في التخزين المحلي للجهاز (لأن المتصفح ما يقدر يدمج بين الصفحات)
+  const wbout = XLSX.write(wb, { type: "base64", bookType: "xlsx" });
+  localStorage.setItem(fileName, wbout);
+
+  // تنزيل الملف مباشرة
+  XLSX.writeFile(wb, fileName);
 }
 
-// 🔹 جمع البيانات من كل قسم في الصفحة الحالية
+// ✅ جمع بيانات الصفحة الحالية
 function collectData(section) {
   const inputs = document.querySelectorAll(
     `#${section}-body input, #${section}-body textarea, #${section}-body select`
   );
-
   const data = {};
   inputs.forEach((i) => {
     const key = i.previousSibling.textContent || "بيان";
@@ -148,34 +162,20 @@ function collectData(section) {
   return data;
 }
 
-// 🔹 تهيئة كل صفحة (المهام / المصروفات / الصعوبات)
+// ✅ تهيئة الصفحة
 function initPage(section) {
   addRow(section);
   const sendBtn = document.querySelector(`#send-${section}`);
   const statusEl = document.getElementById("status");
 
   sendBtn.addEventListener("click", () => {
-    const empName = document.getElementById("empName")
-      ? document.getElementById("empName").value.trim()
-      : "موظف";
-    const empPhone = document.getElementById("empPhone")
-      ? document.getElementById("empPhone").value.trim()
-      : "";
-
-    // جمع بيانات الأقسام الثلاثة إن وُجدت
-    const allSections = {};
-    ["tasks", "expenses", "feedback"].forEach((sec) => {
-      const el = document.getElementById(`${sec}-body`);
-      if (el) allSections[sec] = collectData(sec);
-    });
-
+    const data = collectData(section);
     statusEl.textContent = "📤 جاري إنشاء التقرير...";
-
     try {
-      exportFullReport(empName, empPhone, allSections);
+      saveToExcel(section, data);
       statusEl.textContent = "✅ تم حفظ التقرير بنجاح.";
       statusEl.className = "status success";
-      alert("✅ تم حفظ تقرير Excel يحتوي على كل الجداول.");
+      alert("✅ تم حفظ التقرير في ملف Excel بتاريخ اليوم.");
     } catch (e) {
       console.error(e);
       statusEl.textContent = "❌ حدث خطأ أثناء إنشاء الملف.";
